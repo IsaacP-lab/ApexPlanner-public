@@ -1,0 +1,17 @@
+ApexPlanner — public-architect-evidence (portable bundle)
+========================================================
+
+Purpose: single directory suitable for zip/export without the Rust source tree.
+
+Contents:
+  README.md
+  BENCHMARKS.md
+  MANIFEST.txt
+  docs/governance.md
+  docs/adr/ADR-001-deterministic-graphing-vs-vector-rag.md
+  docs/adr/ADR-002-sqlite-wal-mode-persistence.md
+  interface/mcp-schema.json
+
+Maintenance: authoritative working copies may also exist at repository root
+(README.md, BENCHMARKS.md, docs/, interface/) in a full checkout; keep wording
+in sync when those files change.
