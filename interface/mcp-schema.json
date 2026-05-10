@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://apexplanner.dev/schemas/mcp-tools-sample.json",
+  "title": "ApexPlanner MCP Tools — Sample JSON-RPC / MCP Tool Descriptors",
+  "description": "Sample tool schemas illustrating the MCP handshake surface. Not a complete server manifest; normative wire and tools: full ApexPlanner repository docs/mcp-contract.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "protocolVersion": {
+      "type": "string",
+      "const": "2025-06-18",
+      "description": "MCP protocol revision targeted by this sample."
+    },
+    "transport": {
+      "type": "string",
+      "const": "stdio",
+      "description": "Newline-delimited JSON-RPC 2.0 on stdout/stdin."
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description", "inputSchema"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "inputSchema": { "type": "object" }
+        }
+      }
+    }
+  },
+  "required": ["protocolVersion", "transport", "tools"],
+  "examples": [
+    {
+      "protocolVersion": "2025-06-18",
+      "transport": "stdio",
+      "tools": [
+        {
+          "name": "get_architectural_skeleton",
+          "description": "Return a token-bounded architectural skeleton for indexed sources under path: signatures, types, and doc comments preserved; bodies elided. Optional graph and ordering strategies for monorepo-scale workspaces.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Workspace-relative or absolute path (file or directory)."
+              },
+              "max_tokens": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000,
+                "default": 4000,
+                "description": "Hard cap on returned token estimate; truncation is reported in the response envelope."
+              },
+              "language": {
+                "type": "string",
+                "enum": ["typescript"],
+                "description": "Language filter for skeleton emission."
+              },
+              "include_locked_only": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, restrict listing to intent-locked nodes only."
+              },
+              "include_graph": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, include deterministic nodes and import edges for the same scope."
+              },
+              "file_order": {
+                "type": "string",
+                "enum": ["path", "monorepo"],
+                "default": "path",
+                "description": "Ordering strategy: lexicographic path vs hot-first monorepo heuristics."
+              },
+              "include_rollup": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true and response is partial, include one-line rollup hints for elided paths."
+              }
+            }
+          }
+        },
+        {
+          "name": "check_compliance_ledger",
+          "description": "Read-only query of the local compliance ledger: recent MCP tool invocations, consent metadata, redaction counts, and path arguments suitable for audit export. Returns structured JSON for programmatic consumers.",
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000,
+                "default": 200,
+                "description": "Maximum ledger rows to return, newest first."
+              },
+              "since_iso8601": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Optional inclusive lower bound on stored timestamps (UTC, ISO-8601)."
+              },
+              "tool_filter": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Optional allow-list of tool names; omit for all tools."
+              },
+              "include_redaction_breakdown": {
+                "type": "boolean",
+                "default": false,
+                "description": "If true, include per-row redaction tallies when available."
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
